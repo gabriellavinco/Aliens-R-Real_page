@@ -2,49 +2,42 @@
 let ufoSighting = data;
 
 // selecting btn
-let btn = d3.select("#filter-btn");
+let tbody = d3.select("tbody");
 
-//  On click of btn begin function
-btn.on("click", function(){
+// function build table
+function buildTable(data){
+  tbody.html("");
 
-    // prevent page refresh
-    d3.preventDefault();
+  data.forEach((dataRow) => {
+    // console.table(dataRow)
+    let row = tbody.append('tr');
 
-    // selecting the input element
-    let inputElement = d3.select("#datetime");
+    // console.table(Object.values(dataRow));
 
-    // Get value property of input element
-    let inputValue = inputElement.property("value")
+    Object.values(dataRow).forEach((val) =>{
+      let cell = row.append('td');
+      cell.text(val);
+    });
+  })
+}
 
-    console.log(inputValue);
-    console.log(ufoSighting);
-  
-    // connecting input value to data
-    let filteredData = ufoSighting.filter(ufoSighting => ufoSighting.datetime === inputValue);
+//  function for click
+function handleClick(){
+  // prevent page refresh
+  d3.event.preventDefault();
 
-    
-    console.log(filteredData);
+  // selecting the input element
+  let date = d3.select("#datetime").property('value');
+  let filterData = ufoSighting;
 
-    // set variables for each 
-    let date = filteredData.datetime;
-    let city = filteredData.city;
-    let state = filteredData.state;
-    let country = filteredData.country;
-    let shape = filteredData.shape;
-    let duration = filteredData.durationMinutes;
-    let comments = filteredData.comments;
+  if(date) {
+    filterData = filterData.filter((row) => row.datetime === date);
+  }
 
+  buildTable(filterData);
 
-    // Add the summary stats to the columns in the table
-  d3.select(".table-body")
-  .append("td").text(`${date}`)
-  .append("td").text(`${city}`)
-  .append("td").text(`${state}`)
-  .append("td").text(`${country}`)
-  .append("td").text(`${shape}`)
-  .append("td").text(`${duration}`)
-  .append("td").text(`${comments}`);
+}
 
+d3.selectAll('#filter-btn').on('click', handleClick);
 
-});
-
+buildTable(ufoSighting);
